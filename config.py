@@ -3,7 +3,7 @@ Configuration file for Telegram Product Scraper Bot
 """
 
 # Bot configuration
-BOT_TOKEN = "8327175937:AAGoWZPlDM_UX7efZv6_7vJMHDsrZ3-EyIA"  # REPLACE WITH YOUR ACTUAL TOKEN
+BOT_TOKEN = "8327175937:AAGoWZPlDM_UX7efZv6_7vJMHDsrZ3-EyIA"  # Your token is already here
 BOT_NAME = "Work_flow"
 ADMIN_USER_IDS = []  # Add admin user IDs here
 
