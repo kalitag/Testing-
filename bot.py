@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Telegram Product Scraper Bot - Fixed Implementation
+Telegram Product Scraper Bot - CORRECTED IMPLEMENTATION
 """
 
 import os
@@ -17,12 +17,10 @@ from telegram.ext import (
     filters,
     ContextTypes
 )
-from telegram import (
-    Update
-)
+from telegram import Update
 
-# Local modules - THIS IS THE CRITICAL PART
-import config  # Import config module FIRST
+# Local modules
+import config
 from utils import setup_directories, format_output
 from scraper import process_link
 
@@ -58,7 +56,7 @@ async def mode_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     command = update.effective_message.text
     
     if command == '/advancing':
-        config.MODE_ADVANCED = True  # Update the GLOBAL config
+        config.MODE_ADVANCED = True
         await update.effective_message.reply_text("✅ Switched to High-Advanced Mode\n\n"
                                                 "• Full smart features enabled\n"
                                                 "• Stock verification\n"
@@ -66,7 +64,7 @@ async def mode_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                                 "• Screenshot replacement\n"
                                                 "• Advanced formatting")
     elif command == '/off_advancing':
-        config.MODE_ADVANCED = False  # Update the GLOBAL config
+        config.MODE_ADVANCED = False
         await update.effective_message.reply_text("✅ Switched to Medium Mode\n\n"
                                                 "• Fast processing\n"
                                                 "• Basic scraping\n"
@@ -85,7 +83,7 @@ async def img_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         link_data = LAST_PROCESSED[chat_id]
-        pin_code = config.PIN_DEFAULT  # Use config value
+        pin_code = config.PIN_DEFAULT
         
         # Re-process the link to get new screenshots
         processed = process_link(link_data['link'], pin_code)
@@ -161,7 +159,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Start the bot."""
-    # THIS IS THE CRITICAL FIX - USE config.BOT_TOKEN
+    # CRITICAL: Use config.BOT_TOKEN directly
     application = Application.builder().token(config.BOT_TOKEN).build()
     
     # Setup environment
@@ -185,89 +183,6 @@ def main():
     logger.info("Starting bot...")
     application.run_polling()
 
-if __name__ == '__main__':
-    main()        else:
-            await update.effective_message.reply_text("❌ Could not regenerate message")
-    except Exception as e:
-        logger.error(f"Error regenerating screenshots: {str(e)}")
-        await update.effective_message.reply_text(f"❌ Error updating screenshots: {str(e)}")
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Process incoming messages for product links"""
-    message = update.effective_message
-    chat_id = update.effective_chat.id
-    
-    # Skip if message doesn't contain links
-    if not message.text and not message.caption:
-        return
-    
-    # Extract text from message (caption for media messages)
-    text = message.text or message.caption or ""
-    
-    # Find all links in the message
-    links = re.findall(r'https?://[^\s]+', text)
-    
-    # Process each detected link
-    for link in links:
-        try:
-            # Store the last processed link for /img command
-            LAST_PROCESSED[chat_id] = {
-                'link': link,
-                'timestamp': time.time()
-            }
-            
-            # Extract pin code if available
-            pin_code = "110001"
-            pin_match = re.search(r'pin\s*[:\-]?\s*(\d{6})', text, re.IGNORECASE)
-            if pin_match:
-                pin_code = pin_match.group(1)
-            
-            # Process the link
-            processed = process_link(link, pin_code)
-            if processed:
-                # Format the output
-                formatted_text = format_output(processed)
-                
-                # Send message with appropriate media
-                if processed['images']:
-                    await message.reply_photo(
-                        photo=open(processed['images'][0], 'rb'),
-                        caption=formatted_text
-                    )
-                else:
-                    await message.reply_text(formatted_text)
-            else:
-                await message.reply_text(f"❌ Could not process link: {link}")
-                
-        except Exception as e:
-            logger.error(f"Error processing link {link}: {str(e)}")
-            await message.reply_text(f"❌ Error processing link: {str(e)}")
-
-def main():
-    """Start the bot."""
-    # Create the Application
-    application = Application.builder().token(BOT_TOKEN).build()
-    
-    # Setup environment
-    setup_environment()
-    
-    # Register handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("advancing", mode_command))
-    application.add_handler(CommandHandler("off_advancing", mode_command))
-    application.add_handler(CommandHandler("img", img_command))
-    application.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND, 
-        handle_message
-    ))
-    application.add_handler(MessageHandler(
-        filters.PHOTO | filters.CAPTION, 
-        handle_message
-    ))
-    
-    # Start the Bot
-    logger.info("Starting bot...")
-    application.run_polling()
-
+# THIS IS THE CRITICAL PART - EXACTLY THIS FORMAT
 if __name__ == '__main__':
     main()
