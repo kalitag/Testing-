@@ -22,16 +22,10 @@ from telegram import (
     Update
 )
 
-# Incorrect (original)
-from config import BOT_TOKEN, MODE_ADVANCED, SCREENSHOT_DIR
-
-# Correct (if config.py is in the same directory)
-import config
-
-# Then access variables as:
-BOT_TOKEN = config.BOT_TOKEN
-MODE_ADVANCED = config.MODE_ADVANCED
-SCREENSHOT_DIR = config.SCREENSHOT_DIR
+# Local modules
+import config  # Correct import
+from utils import setup_directories, format_output
+from scraper import process_link
 
 # Setup logging
 logging.basicConfig(
@@ -59,6 +53,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/off_advancing - Switch to Medium Mode\n"
         "/img - Regenerate last message with new screenshots"
     )
+
+# ... [rest of the code remains unchanged] ...
 
 async def mode_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle mode switching commands"""
