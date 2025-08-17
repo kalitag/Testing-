@@ -1,0 +1,5 @@
+# Check if dependencies are installed
+pip list | grep -E "telegram|selenium|chrome"
+
+# Test Chrome installation
+google-chrome --version
