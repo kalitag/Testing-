@@ -6,6 +6,7 @@ import os
 import re
 import time
 from urllib.parse import urlparse, parse_qs, unquote
+import config  # Import config
 
 def clean_url(url):
     """Remove affiliate tags and tracking parameters from URL"""
@@ -105,8 +106,23 @@ def format_output(data):
             formatted += f"\nSize - {', '.join(data['sizes'])}"
         
         # Add pin code
-        formatted += f"\nPin - {data.get('pin', '110001')}"
+        formatted += f"\nPin - {data.get('pin', config.PIN_DEFAULT)}"
         
+        return formatted + footer
+    
+    elif data.get('is_clothing', False):
+        # Clothing format (non-Meesho): [Gender] [Quantity] [Clean Title] @[price] rs
+        formatted = f"{title} @{price} rs\n{url}"
+        return formatted + footer
+    
+    else:
+        # Non-clothing format: [Brand] [Clean Title] from @[price] rs
+        formatted = f"{title} from @{price} rs\n{url}"
+        return formatted + footer
+
+def setup_directories():
+    """Create necessary directories"""
+    os.makedirs(config.SCREENSHOT_DIR, exist_ok=True)        
         return formatted + footer
     
     elif data.get('is_clothing', False):
